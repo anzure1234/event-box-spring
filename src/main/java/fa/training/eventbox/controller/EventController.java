@@ -42,7 +42,7 @@ public class EventController {
                            @RequestParam(required = false,defaultValue = AppConstant.DEFAULT_PAGE_SIZE_STR) Integer size,
                             @RequestParam(required = false,name="sort",defaultValue = AppConstant.DEFAULT_SORT_FIELD) List<String> sorts,
                            @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_SORT_DIRECTION) String direction,
-                           @RequestParam(required=false,name="q")Optional<String> keywordOpt){
+                           @RequestParam(required=false,name="search")Optional<String> keywordOpt){
 
         List<Sort.Order> orders = new ArrayList<>();
         for (String sortField : sorts){
