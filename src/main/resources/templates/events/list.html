@@ -20,8 +20,12 @@
             <p th:if="${successMessage}" th:text="#{${successMessage}}"></p>
 
             <div class="table-responsive">
-                <div class="mb-3">
+                <div class="mb-3 d-flex justify-content-between">
                     <a th:href="@{events/create}" class="btn btn-primary">Create new</a>
+                    <form>
+                        <input type="text" name="search" th:placeholder="Search">
+                        <button type="submit">Search</button>
+                    </form>
                 </div>
                 <table id="example" class="table table-striped" style="width:100%">
                     <thead>
@@ -87,18 +91,18 @@
                         </tr>
                     </tbody>
                 </table>
-                <nav aria-label="Page navigation example">
+                <nav aria-label="Page navigation example" th:if="${eventPage.getTotalPages()>1}">
                     <ul class="pagination">
-                        <li class="page-item" th:classappend="${eventPage.number==0} ? 'disabled'">
-                            <a class="page-link" th:href="@{events(page=${(eventPage.number)-1})}">Previous</a></li>
+                        <li class="page-item" th:if="${eventPage.hasPrevious()}">
+                            <a class="page-link" th:href="@{'/events?page=' + ${eventPage.previousPageable().pageNumber+1}}">Previous</a></li>
 
 
                         <li class="page-item" th:each="page : ${#numbers.sequence(1,eventPage.getTotalPages())}">
                             <a class="page-link" th:text="${page}" th:href="@{events(page=${page})}"></a></li>
 
 
-                        <li class="page-item" th:classappend="${eventPage.number == (eventPage.totalPages)-1}? 'disabled'">
-                            <a class="page-link" th:href="@{events(page=${(eventPage.number)+1})}">Next</a></li>
+                        <li class="page-item" th:if="${eventPage.hasNext()}">
+                            <a class="page-link" th:href="@{'/events?page=' + ${eventPage.nextPageable().pageNumber+1}}">Next</a></li>
                     </ul>
                 </nav>
             </div>
