@@ -1,9 +1,13 @@
 package fa.training.eventbox.resource;
 
 import fa.training.eventbox.constant.AppConstant;
+import fa.training.eventbox.exception.ResourceNotFoundException;
+import fa.training.eventbox.model.dto.EventDetailDisplayDto;
+import fa.training.eventbox.model.dto.EventFormDto;
 import fa.training.eventbox.model.dto.EventListDisplayDto;
 import fa.training.eventbox.model.entity.Event;
 import fa.training.eventbox.service.EventService;
+import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
@@ -11,11 +15,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("api/events")
 public class EventResource {
     private final EventService eventService;
 
@@ -31,7 +34,7 @@ public class EventResource {
     }
 
 
-    @GetMapping("api/events") // HttpRequest GET /events
+    @GetMapping // HttpRequest GET /events
     public ResponseEntity<Page<EventListDisplayDto>> showList(
             @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_PAGE_STR) Integer page,
             @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_PAGE_SIZE_STR) Integer size,
@@ -71,4 +74,34 @@ public class EventResource {
         Page<EventListDisplayDto> result = new PageImpl<>(displayDtos, pageRequest, eventPage.getTotalElements());
         return ResponseEntity.ok(result);
     }
+
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}") // "api/events/" + "/id" = "api/events/id"
+    public void delete(@PathVariable Long id) {
+        Optional<Event> eventOpt = eventService.findById(id);
+        Event event = eventOpt.orElseThrow(ResourceNotFoundException::new);
+        eventService.delete(event);
+
+    }
+
+    @PostMapping
+    public ResponseEntity<EventDetailDisplayDto> create(@RequestBody @Valid EventFormDto eventFormDto) {
+        Event event = new Event(); //Convert eventFormDto to Event
+        BeanUtils.copyProperties(eventFormDto, event);
+        eventService.create(event);
+        EventDetailDisplayDto  eventDetailDisplayDto = new EventDetailDisplayDto();
+        BeanUtils.copyProperties(event, eventDetailDisplayDto);
+
+
+        return ResponseEntity.ok(eventDetailDisplayDto);
+    }
+
+
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @DeleteMapping("api/events/{id}")
+//    public ResponseEntity<> delete1(){
+//
+//    }
+
 }

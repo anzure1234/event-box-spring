@@ -1,6 +1,7 @@
 package fa.training.eventbox.model.enums;
 
 public enum EventStatus {
+    DRAFT,
     OPEN_TO,
     REGISTRATION,
 

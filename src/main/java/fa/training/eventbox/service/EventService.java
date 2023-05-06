@@ -24,5 +24,10 @@ public interface EventService {
 
     boolean deleteById(Long id);
 
+    Optional<Event> findByID(Long id);
+
+    public void delete(Event event);
+
+
 
 }
